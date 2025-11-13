@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import uk.ac.tees.mad.locknote.R
+import uk.ac.tees.mad.locknote.ui.theme.AppBackground
 
 @Composable
 fun SplashScreen(navController: NavController) {
@@ -46,15 +47,16 @@ fun SplashScreen(navController: NavController) {
 //                popUpTo("splash") { inclusive = true }
 //            }
 //        } else {
-//            navController.navigate("auth") {
-//                popUpTo("splash") { inclusive = true }
-//            }
+            navController.navigate("auth") {
+                popUpTo("splash") { inclusive = true }
+            }
 //        }
     }
 
     Box(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(AppBackground),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -67,7 +69,7 @@ fun SplashScreen(navController: NavController) {
                     .clip(RoundedCornerShape(24.dp))
             )
             Spacer(modifier = Modifier.height(24.dp))
-            Text("LockNotes", fontSize = 28.sp, fontWeight = FontWeight.Bold,)
+            Text("LockNotes", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "\"$quote\"",

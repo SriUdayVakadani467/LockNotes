@@ -10,8 +10,8 @@ fun AppNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "splash") {
 
         composable("splash") { SplashScreen(navController) }
-//
-//        composable("auth") { AuthScreen(navController) }
+
+        composable("auth") { AuthScreen(navController) }
 //
 //        composable("fingerprint") { FingerprintScreen(navController) }
 //
