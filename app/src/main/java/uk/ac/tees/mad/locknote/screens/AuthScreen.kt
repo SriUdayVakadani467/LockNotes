@@ -31,15 +31,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import uk.ac.tees.mad.locknote.MainViewmodel
 import uk.ac.tees.mad.locknote.screens.components.AuthTextField
 import uk.ac.tees.mad.locknote.ui.theme.AppBackground
 import uk.ac.tees.mad.locknote.ui.theme.PrimaryBlue
 
 @Composable
-fun AuthScreen(navController: NavController) {
+fun AuthScreen(navController: NavController, viewModel: MainViewmodel = hiltViewModel()) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
 
     var isLogin by remember { mutableStateOf(true) }
     var email by remember { mutableStateOf("") }
@@ -114,36 +115,11 @@ fun AuthScreen(navController: NavController) {
                         return@Button
                     }
 
-//                    coroutineScope.launch {
-//                        isLoading = true
-//                        if (isLogin) {
-//                            auth.signInWithEmailAndPassword(email.trim(), password.trim())
-//                                .addOnCompleteListener { task ->
-//                                    isLoading = false
-//                                    if (task.isSuccessful) {
-//                                        Toast.makeText(context, "Login Successful!", Toast.LENGTH_SHORT).show()
-//                                        navController.navigate("dashboard") {
-//                                            popUpTo("auth") { inclusive = true }
-//                                        }
-//                                    } else {
-//                                        Toast.makeText(context, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-//                                    }
-//                                }
-//                        } else {
-//                            auth.createUserWithEmailAndPassword(email.trim(), password.trim())
-//                                .addOnCompleteListener { task ->
-//                                    isLoading = false
-//                                    if (task.isSuccessful) {
-//                                        Toast.makeText(context, "Account Created Successfully!", Toast.LENGTH_SHORT).show()
-//                                        navController.navigate("dashboard") {
-//                                            popUpTo("auth") { inclusive = true }
-//                                        }
-//                                    } else {
-//                                        Toast.makeText(context, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-//                                    }
-//                                }
-//                        }
-//                    }
+                        if (isLogin) {
+                            viewModel.login(context, email, password, navController)
+                        } else {
+                            viewModel.signup(context, email, password, navController)
+                        }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
