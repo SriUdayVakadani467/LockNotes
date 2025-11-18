@@ -46,7 +46,7 @@ fun AuthScreen(navController: NavController, viewModel: MainViewmodel = hiltView
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
+    var isLoading = viewModel.isLoading.value
 
     Box(
         modifier = Modifier

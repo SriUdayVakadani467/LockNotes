@@ -15,7 +15,7 @@ fun AppNavGraph(navController: NavHostController) {
 //
 //        composable("fingerprint") { FingerprintScreen(navController) }
 //
-//        composable("dashboard") { NotesDashboardScreen(navController) }
+        composable("dashboard") { NotesDashboardScreen(navController) }
 //
 //        composable("addEditNote") { AddEditNoteScreen(navController) }
 //

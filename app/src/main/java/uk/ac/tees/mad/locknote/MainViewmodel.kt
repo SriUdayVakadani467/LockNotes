@@ -11,6 +11,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import uk.ac.tees.mad.locknote.model.NoteModel
+import uk.ac.tees.mad.locknote.utils.NetworkUtils
+import java.net.URL
 
 @HiltViewModel
 class MainViewmodel @Inject constructor(
@@ -64,5 +68,26 @@ class MainViewmodel @Inject constructor(
                 }
         }
     }
+
+
+    suspend fun fetchQuote(context: Context): String {
+        return try {
+            if (NetworkUtils.isOnline(context)) {
+                val response = URL("https://api.quotable.io/random").readText()
+                val json = JSONObject(response)
+                json.getString("content")
+            } else {
+                "Stay strong, stay private."
+            }
+        } catch (e: Exception) {
+            "Keep your thoughts secure."
+        }
+    }
+
+    fun mockNotes(): List<NoteModel> = listOf(
+        NoteModel("1", "Shopping List", "Buy milk, bread, and eggs", "2025-10-31 10:00 AM"),
+        NoteModel("2", "Ideas", "Implement biometric lock on edit screen", "2025-10-30 8:00 PM"),
+        NoteModel("3", "Passwords", "WiFi: MySecret@123", "2025-10-28 3:45 PM")
+    )
 
 }
