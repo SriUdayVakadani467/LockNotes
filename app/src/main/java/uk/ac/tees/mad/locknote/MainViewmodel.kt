@@ -18,7 +18,7 @@ import java.net.URL
 
 @HiltViewModel
 class MainViewmodel @Inject constructor(
-    private val firebaseAuth: FirebaseAuth,
+    val firebaseAuth: FirebaseAuth,
     private val firebaseFirestore: FirebaseFirestore
 ) : ViewModel() {
 

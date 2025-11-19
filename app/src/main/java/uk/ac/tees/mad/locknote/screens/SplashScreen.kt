@@ -19,15 +19,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
+import uk.ac.tees.mad.locknote.MainViewmodel
 import uk.ac.tees.mad.locknote.R
 import uk.ac.tees.mad.locknote.ui.theme.AppBackground
 
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen(navController: NavController, viewmodel: MainViewmodel = hiltViewModel()) {
     val context = LocalContext.current
-    //val auth = FirebaseAuth.getInstance()
 
     val scale = remember { Animatable(0f) }
     var quote by remember { mutableStateOf("Keep your thoughts secure.") }
@@ -41,16 +42,16 @@ fun SplashScreen(navController: NavController) {
 
         delay(2000)
 
-//        val user = auth.currentUser
-//        if (user != null) {
-//            navController.navigate("fingerprint") {
-//                popUpTo("splash") { inclusive = true }
-//            }
-//        } else {
+        val user = viewmodel.firebaseAuth.currentUser
+        if (user != null) {
+            navController.navigate("dashboard") {
+                popUpTo("splash") { inclusive = true }
+            }
+        } else {
             navController.navigate("auth") {
                 popUpTo("splash") { inclusive = true }
             }
-//        }
+        }
     }
 
     Box(
