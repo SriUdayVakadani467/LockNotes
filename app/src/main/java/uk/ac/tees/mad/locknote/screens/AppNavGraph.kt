@@ -17,7 +17,7 @@ fun AppNavGraph(navController: NavHostController) {
 //
         composable("dashboard") { NotesDashboardScreen(navController) }
 //
-//        composable("addEditNote") { AddEditNoteScreen(navController) }
+        composable("addEditNote") { AddEditNoteScreen(navController) }
 //
 //        composable("settings") { SettingsScreen(navController) }
     }
