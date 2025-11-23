@@ -69,6 +69,52 @@ class MainViewmodel @Inject constructor(
         }
     }
 
+    fun saveOrUpdateNote(context: Context, noteId: String?, title: String, content: String) {
+        viewModelScope.launch {
+            isLoading.value = true
+            val noteData = hashMapOf(
+                "title" to title,
+                "content" to content,
+                "timestamp" to System.currentTimeMillis()
+            )
+
+            try {
+                if (NetworkUtils.isOnline(context)) {
+                    val notesRef = firebaseFirestore.collection("notes")
+                    if (noteId == null) {
+                        notesRef.add(noteData)
+                        Toast.makeText(context, "Note saved successfully!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        notesRef.document(noteId).set(noteData)
+                        Toast.makeText(context, "Note updated successfully!", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(context, "Offline — saved locally for sync", Toast.LENGTH_SHORT).show()
+                    saveDraftLocally(context, title, content)
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun deleteNote(context: Context, noteId: String) {
+        viewModelScope.launch {
+            try {
+                firebaseFirestore.collection("notes").document(noteId).delete()
+                Toast.makeText(context, "Note deleted", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error deleting note: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun saveDraftLocally(context: Context, title: String, content: String) {
+        val prefs = context.getSharedPreferences("draft_notes", Context.MODE_PRIVATE)
+        prefs.edit().putString(System.currentTimeMillis().toString(), "$title\n$content").apply()
+    }
 
     suspend fun fetchQuote(context: Context): String {
         return try {

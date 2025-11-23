@@ -1,15 +1,10 @@
 package uk.ac.tees.mad.locknote.screens
 
-import android.content.Context
-import android.os.Vibrator
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Save
@@ -24,34 +19,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import uk.ac.tees.mad.locknote.MainViewmodel
+import uk.ac.tees.mad.locknote.model.NoteModel
 import uk.ac.tees.mad.locknote.ui.theme.AppBackground
 import uk.ac.tees.mad.locknote.ui.theme.PrimaryBlue
 import uk.ac.tees.mad.locknote.ui.theme.TextGray
 import uk.ac.tees.mad.locknote.ui.theme.TextWhite
-import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditNoteScreen(
     navController: NavController,
     noteId: String? = null,
-    titleArg: String? = null,
-    contentArg: String? = null
+    existingTitle: String? = null,
+    existingContent: String? = null,
+    viewmodel: MainViewmodel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-    val firestore = FirebaseFirestore.getInstance()
 
-    var title by remember { mutableStateOf(TextFieldValue(titleArg ?: "")) }
-    var content by remember { mutableStateOf(TextFieldValue(contentArg ?: "")) }
-    var isSaving by remember { mutableStateOf(false) }
+    var title by remember { mutableStateOf(TextFieldValue(existingTitle ?: "")) }
+    var content by remember { mutableStateOf(TextFieldValue(existingContent ?: "")) }
 
-    val scrollState = rememberScrollState()
+    val isLoading by viewmodel.isLoading
 
     Scaffold(
         topBar = {
@@ -63,42 +56,43 @@ fun AddEditNoteScreen(
                         fontWeight = FontWeight.Bold
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                 actions = {
                     if (noteId != null) {
-//                        IconButton(onClick = {
-//                            scope.launch {
-//                                deleteNote(context, firestore, noteId)
-//                                vibrator.vibrate(100)
-//                                navController.popBackStack()
-//                            }
-//                        }) {
-//                            Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
-//                        }
+                        IconButton(onClick = {
+                            scope.launch {
+                                viewmodel.deleteNote(context, noteId)
+                                navController.popBackStack()
+                            }
+                        }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                        }
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-//                    scope.launch {
-//                        if (title.text.isBlank() || content.text.isBlank()) {
-//                            Toast.makeText(context, "Title or content cannot be empty", Toast.LENGTH_SHORT).show()
-//                            return@launch
-//                        }
-//                        isSaving = true
-//                        saveNote(context, firestore, noteId, title.text, content.text)
-//                        vibrator.vibrate(100)
-//                        delay(400)
-//                        isSaving = false
-//                        navController.popBackStack()
-//                    }
+                    if (title.text.isBlank() || content.text.isBlank()) {
+                        Toast.makeText(context, "Title or content cannot be empty", Toast.LENGTH_SHORT).show()
+                        return@FloatingActionButton
+                    }
+                    scope.launch {
+                        viewmodel.saveOrUpdateNote(
+                            context = context,
+                            noteId = noteId,
+                            title = title.text,
+                            content = content.text
+                        )
+                        navController.popBackStack()
+                    }
                 },
                 containerColor = PrimaryBlue,
+                contentColor = TextWhite,
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(Icons.Default.Save, contentDescription = "Save", tint = Color.White)
+                Icon(Icons.Default.Save, contentDescription = "Save Note")
             }
         },
         containerColor = AppBackground
@@ -109,7 +103,6 @@ fun AddEditNoteScreen(
                 .background(AppBackground)
                 .padding(paddingValues)
                 .padding(16.dp)
-                .verticalScroll(scrollState)
         ) {
             BasicTextField(
                 value = title,
@@ -124,9 +117,11 @@ fun AddEditNoteScreen(
                     innerTextField()
                 }
             )
+
             Spacer(modifier = Modifier.height(12.dp))
             Divider(color = Color.DarkGray, thickness = 1.dp)
             Spacer(modifier = Modifier.height(12.dp))
+
             BasicTextField(
                 value = content,
                 onValueChange = { content = it },
@@ -144,7 +139,7 @@ fun AddEditNoteScreen(
             )
         }
 
-        if (isSaving) {
+        if (isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -156,4 +151,3 @@ fun AddEditNoteScreen(
         }
     }
 }
-
