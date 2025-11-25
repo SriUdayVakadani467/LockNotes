@@ -55,9 +55,10 @@ fun NotesDashboardScreen(navController: NavController, viewmodel: MainViewmodel 
     LaunchedEffect(Unit) {
         scope.launch {
             quote = viewmodel.fetchQuote(context)
-            notes = viewmodel.mockNotes()
+            notes = viewmodel.fetchNotes(context)
         }
     }
+
 
     Scaffold(
         floatingActionButton = {
@@ -105,7 +106,7 @@ fun NotesDashboardScreen(navController: NavController, viewmodel: MainViewmodel 
                         scope.launch {
                             isRefreshing = true
                             quote = viewmodel.fetchQuote(context)
-                            notes = viewmodel.mockNotes()
+                            notes = viewmodel.fetchNotes(context)
                             isRefreshing = false
                         }
                     },
