@@ -34,7 +34,9 @@ fun SwipeToRefreshList(
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(notes) { note ->
                     NoteCard(note) {
-                        navController.navigate("addEditNote?noteId=${note.id}")
+                        navController.navigate(
+                            "addEditNote?noteId=${note.id}&noteTitle=${note.title}&noteContent=${note.content}"
+                        )
                     }
                 }
             }

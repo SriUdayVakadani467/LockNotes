@@ -34,15 +34,15 @@ import uk.ac.tees.mad.locknote.ui.theme.TextWhite
 fun AddEditNoteScreen(
     navController: NavController,
     noteId: String? = null,
-    existingTitle: String? = null,
-    existingContent: String? = null,
+    initialTitle: String = "",
+    initialContent: String = "",
     viewmodel: MainViewmodel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    var title by remember { mutableStateOf(TextFieldValue(existingTitle ?: "")) }
-    var content by remember { mutableStateOf(TextFieldValue(existingContent ?: "")) }
+    var title by remember { mutableStateOf(TextFieldValue(initialTitle)) }
+    var content by remember { mutableStateOf(TextFieldValue(initialContent)) }
 
     val isLoading by viewmodel.isLoading
 
