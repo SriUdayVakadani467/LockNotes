@@ -40,11 +40,10 @@ fun AddEditNoteScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val isLoading by viewmodel.isLoading
 
     var title by remember { mutableStateOf(TextFieldValue(initialTitle)) }
     var content by remember { mutableStateOf(TextFieldValue(initialContent)) }
-
-    val isLoading by viewmodel.isLoading
 
     Scaffold(
         topBar = {
@@ -74,17 +73,9 @@ fun AddEditNoteScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (title.text.isBlank() || content.text.isBlank()) {
-                        Toast.makeText(context, "Title or content cannot be empty", Toast.LENGTH_SHORT).show()
-                        return@FloatingActionButton
-                    }
+                    if (title.text.isBlank() || content.text.isBlank()) return@FloatingActionButton
                     scope.launch {
-                        viewmodel.saveOrUpdateNote(
-                            context = context,
-                            noteId = noteId,
-                            title = title.text,
-                            content = content.text
-                        )
+                        viewmodel.saveOrUpdateNote(context, noteId, title.text, content.text)
                         navController.popBackStack()
                     }
                 },
@@ -151,3 +142,4 @@ fun AddEditNoteScreen(
         }
     }
 }
+

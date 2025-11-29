@@ -1,6 +1,8 @@
 package uk.ac.tees.mad.locknote
 
 import android.content.Context
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
@@ -18,6 +20,8 @@ import org.json.JSONObject
 import uk.ac.tees.mad.locknote.model.NoteModel
 import uk.ac.tees.mad.locknote.utils.NetworkUtils
 import java.net.URL
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @HiltViewModel
 class MainViewmodel @Inject constructor(
@@ -27,6 +31,10 @@ class MainViewmodel @Inject constructor(
 
     val isLoading = mutableStateOf(false)
 
+    private fun vibrate(context: Context, duration: Long = 100) {
+        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        vibrator.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
+    }
 
     fun login(context: Context, email: String, password: String, navController: NavController) {
         viewModelScope.launch {
@@ -64,10 +72,16 @@ class MainViewmodel @Inject constructor(
         }
     }
 
-
     fun saveOrUpdateNote(context: Context, noteId: String?, title: String, content: String) {
         viewModelScope.launch {
             isLoading.value = true
+            val user = firebaseAuth.currentUser
+            if (user == null) {
+                Toast.makeText(context, "User not logged in", Toast.LENGTH_SHORT).show()
+                isLoading.value = false
+                return@launch
+            }
+
             val noteData = hashMapOf(
                 "title" to title,
                 "content" to content,
@@ -76,13 +90,19 @@ class MainViewmodel @Inject constructor(
 
             try {
                 if (NetworkUtils.isOnline(context)) {
-                    val notesRef = firebaseFirestore.collection("notes")
+                    val notesRef = firebaseFirestore.collection("users")
+                        .document(user.uid)
+                        .collection("notes")
+
                     if (noteId == null) {
                         notesRef.add(noteData).await()
+                        Toast.makeText(context, "Note saved!", Toast.LENGTH_SHORT).show()
                     } else {
                         notesRef.document(noteId).set(noteData).await()
+                        Toast.makeText(context, "Note updated!", Toast.LENGTH_SHORT).show()
                     }
-                    Toast.makeText(context, "Note saved!", Toast.LENGTH_SHORT).show()
+
+                    vibrate(context)
                     cacheNotes(context, fetchNotesFromFirestore(context))
                 } else {
                     Toast.makeText(context, "Offline — saved locally for sync", Toast.LENGTH_SHORT).show()
@@ -100,8 +120,21 @@ class MainViewmodel @Inject constructor(
     fun deleteNote(context: Context, noteId: String) {
         viewModelScope.launch {
             try {
-                firebaseFirestore.collection("notes").document(noteId).delete().await()
+                val user = firebaseAuth.currentUser
+                if (user == null) {
+                    Toast.makeText(context, "User not logged in", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                firebaseFirestore.collection("users")
+                    .document(user.uid)
+                    .collection("notes")
+                    .document(noteId)
+                    .delete()
+                    .await()
+
                 Toast.makeText(context, "Note deleted", Toast.LENGTH_SHORT).show()
+                vibrate(context, 70)
                 cacheNotes(context, fetchNotesFromFirestore(context))
             } catch (e: Exception) {
                 Toast.makeText(context, "Error deleting note: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -120,12 +153,23 @@ class MainViewmodel @Inject constructor(
     }
 
     private suspend fun fetchNotesFromFirestore(context: Context): List<NoteModel> {
-        val snapshot = firebaseFirestore.collection("notes").get().await()
+        val user = firebaseAuth.currentUser ?: return emptyList()
+        val snapshot = firebaseFirestore.collection("users")
+            .document(user.uid)
+            .collection("notes")
+            .get()
+            .await()
+
         return snapshot.documents.mapNotNull { doc ->
             val title = doc.getString("title") ?: ""
             val content = doc.getString("content") ?: ""
             val time = doc.getLong("timestamp") ?: 0L
-            NoteModel(doc.id, title, content, java.text.SimpleDateFormat("yyyy-MM-dd HH:mm").format(time))
+            NoteModel(
+                id = doc.id,
+                title = title,
+                content = content,
+                timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(time)
+            )
         }
     }
 
