@@ -211,7 +211,7 @@ class MainViewmodel @Inject constructor(
         prefs.edit().putString(System.currentTimeMillis().toString(), "$title\n$content").apply()
     }
 
-    suspend fun fetchQuote(context: Context): String {
+    fun fetchQuote(context: Context): String {
         return try {
             if (NetworkUtils.isOnline(context)) {
                 val response = URL("https://api.quotable.io/random").readText()
@@ -222,6 +222,44 @@ class MainViewmodel @Inject constructor(
             }
         } catch (e: Exception) {
             "Keep your thoughts secure."
+        }
+    }
+
+    // ---------------- SETTINGS / PROFILE ---------------- //
+
+    fun setFingerprintPreference(context: Context, enabled: Boolean) {
+        val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("fingerprint_enabled", enabled).apply()
+    }
+
+    fun getFingerprintPreference(context: Context): Boolean {
+        val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        return prefs.getBoolean("fingerprint_enabled", false)
+    }
+
+    fun setThemePreference(context: Context, darkMode: Boolean) {
+        val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("dark_theme", darkMode).apply()
+    }
+
+    fun getThemePreference(context: Context): Boolean {
+        val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        return prefs.getBoolean("dark_theme", false)
+    }
+
+    fun clearLocalCache(context: Context) {
+        val prefs1 = context.getSharedPreferences("cached_notes", Context.MODE_PRIVATE)
+        val prefs2 = context.getSharedPreferences("draft_notes", Context.MODE_PRIVATE)
+        prefs1.edit().clear().apply()
+        prefs2.edit().clear().apply()
+        Toast.makeText(context, "Local cache cleared", Toast.LENGTH_SHORT).show()
+    }
+
+    fun logout(context: Context, navController: NavController) {
+        firebaseAuth.signOut()
+        Toast.makeText(context, "Logged out successfully!", Toast.LENGTH_SHORT).show()
+        navController.navigate("auth") {
+            popUpTo("dashboard") { inclusive = true }
         }
     }
 }

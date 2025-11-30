@@ -37,7 +37,6 @@ fun AppNavGraph(navController: NavHostController) {
                 initialContent = noteContent ?: ""
             )
         }
-//
-//        composable("settings") { SettingsScreen(navController) }
+        composable("settings") { SettingsScreen(navController) }
     }
 }
