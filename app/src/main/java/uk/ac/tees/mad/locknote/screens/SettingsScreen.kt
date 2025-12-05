@@ -123,7 +123,6 @@ fun SettingsScreen(navController: NavController, viewmodel: MainViewmodel = hilt
     }
 }
 
-// ------------------- Reusable Components ------------------- //
 
 @Composable
 fun SettingSwitchItem(

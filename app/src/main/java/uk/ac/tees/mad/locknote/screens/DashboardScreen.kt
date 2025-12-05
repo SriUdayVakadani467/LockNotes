@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -87,7 +88,7 @@ fun NotesDashboardScreen(navController: NavController, viewmodel: MainViewmodel 
                 actions = {
                     IconButton(onClick = { navController.navigate("settings") }) {
                         Icon(
-                            imageVector = Icons.Default.AccountCircle,
+                            imageVector = Icons.Default.Settings,
                             contentDescription = "Profile",
                             tint = TextWhite,
                             modifier = Modifier.size(28.dp)
