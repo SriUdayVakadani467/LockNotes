@@ -225,26 +225,24 @@ class MainViewmodel @Inject constructor(
         }
     }
 
-    // ---------------- SETTINGS / PROFILE ---------------- //
-
     fun setFingerprintPreference(context: Context, enabled: Boolean) {
         val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("fingerprint_enabled", enabled).apply()
+        prefs.edit().putBoolean("biometric_enabled", enabled).apply()
     }
 
     fun getFingerprintPreference(context: Context): Boolean {
         val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        return prefs.getBoolean("fingerprint_enabled", false)
+        return prefs.getBoolean("biometric_enabled", false)
     }
 
     fun setThemePreference(context: Context, darkMode: Boolean) {
         val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("dark_theme", darkMode).apply()
+        prefs.edit().putBoolean("dark_mode", darkMode).apply()
     }
 
     fun getThemePreference(context: Context): Boolean {
         val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        return prefs.getBoolean("dark_theme", false)
+        return prefs.getBoolean("dark_mode", false)
     }
 
     fun clearLocalCache(context: Context) {

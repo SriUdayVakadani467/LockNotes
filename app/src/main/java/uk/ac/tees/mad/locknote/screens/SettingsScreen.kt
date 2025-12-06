@@ -56,7 +56,6 @@ fun SettingsScreen(navController: NavController, viewmodel: MainViewmodel = hilt
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            // Fingerprint toggle
             SettingSwitchItem(
                 icon = Icons.Default.Fingerprint,
                 title = "Enable Fingerprint Unlock",
@@ -69,7 +68,6 @@ fun SettingsScreen(navController: NavController, viewmodel: MainViewmodel = hilt
 
             Spacer(Modifier.height(12.dp))
 
-            // Theme toggle
             SettingSwitchItem(
                 icon = Icons.Default.Brightness4,
                 title = "Dark Theme",
@@ -82,7 +80,6 @@ fun SettingsScreen(navController: NavController, viewmodel: MainViewmodel = hilt
 
             Spacer(Modifier.height(12.dp))
 
-            // Clear cache
             SettingActionItem(
                 icon = Icons.Default.DeleteSweep,
                 title = "Clear Local Cache",
@@ -92,7 +89,6 @@ fun SettingsScreen(navController: NavController, viewmodel: MainViewmodel = hilt
 
             Spacer(Modifier.height(12.dp))
 
-            // Logout
             SettingActionItem(
                 icon = Icons.Default.Logout,
                 title = "Logout",
@@ -102,7 +98,6 @@ fun SettingsScreen(navController: NavController, viewmodel: MainViewmodel = hilt
 
             Spacer(Modifier.height(40.dp))
 
-            // About
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center

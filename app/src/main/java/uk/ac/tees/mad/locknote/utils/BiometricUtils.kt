@@ -2,14 +2,14 @@ package uk.ac.tees.mad.locknote.utils
 
 import androidx.biometric.BiometricManager
 import android.content.Context
-import androidx.biometric.BiometricPrompt  
+import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 
 object BiometricUtils {
 
     fun isBiometricAvailable(context: Context): Boolean {
-        val biometricManager = BiometricManager.from(context)  // Now resolves via AndroidX
+        val biometricManager = BiometricManager.from(context)
         return biometricManager.canAuthenticate(
             BiometricManager.Authenticators.BIOMETRIC_STRONG or
                     BiometricManager.Authenticators.BIOMETRIC_WEAK
@@ -22,14 +22,13 @@ object BiometricUtils {
         onError: (String) -> Unit
     ) {
         val executor = ContextCompat.getMainExecutor(activity)
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()  // Now resolves via AndroidX
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle("Unlock LockNotes")
-            // FIXED: Explicitly set allowed authenticators to match isBiometricAvailable.
             .setAllowedAuthenticators(
                 BiometricManager.Authenticators.BIOMETRIC_STRONG or
                         BiometricManager.Authenticators.BIOMETRIC_WEAK
             )
-            .setSubtitle("Log in using your biometric credential")  // Inclusive for fingerprint/face/etc.
+            .setSubtitle("Log in using your biometric credential")
             .setNegativeButtonText("Cancel")
             .build()
 

@@ -1,5 +1,9 @@
 package uk.ac.tees.mad.locknote.screens
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -44,8 +49,10 @@ import uk.ac.tees.mad.locknote.screens.components.SwipeToRefreshList
 import uk.ac.tees.mad.locknote.ui.theme.AppBackground
 import uk.ac.tees.mad.locknote.ui.theme.PrimaryBlue
 import uk.ac.tees.mad.locknote.ui.theme.TextWhite
+import uk.ac.tees.mad.locknote.utils.BiometricUtils
 
 
+@SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesDashboardScreen(navController: NavController, viewmodel: MainViewmodel = hiltViewModel()) {
@@ -60,6 +67,25 @@ fun NotesDashboardScreen(navController: NavController, viewmodel: MainViewmodel 
         scope.launch {
             quote = viewmodel.fetchQuote(context)
             notes = viewmodel.fetchNotes(context)
+        }
+    }
+    val activity = LocalContext.current as FragmentActivity
+
+    LaunchedEffect(Unit) {
+        val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val isBiometricEnabled = prefs.getBoolean("biometric_enabled", false)
+
+        if (isBiometricEnabled && BiometricUtils.isBiometricAvailable(context)) {
+            BiometricUtils.showBiometricPrompt(
+                activity = activity,
+                onSuccess = {
+                    Toast.makeText(context, "Unlocked Successfully!", Toast.LENGTH_SHORT).show()
+                },
+                onError = { error ->
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                    (context as Activity).finish() // optional: exit app if failed
+                }
+            )
         }
     }
 
