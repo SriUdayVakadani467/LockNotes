@@ -68,18 +68,6 @@ fun SettingsScreen(navController: NavController, viewmodel: MainViewmodel = hilt
 
             Spacer(Modifier.height(12.dp))
 
-            SettingSwitchItem(
-                icon = Icons.Default.Brightness4,
-                title = "Dark Theme",
-                checked = darkThemeEnabled,
-                onCheckedChange = {
-                    darkThemeEnabled = it
-                    viewmodel.setThemePreference(context, it)
-                }
-            )
-
-            Spacer(Modifier.height(12.dp))
-
             SettingActionItem(
                 icon = Icons.Default.DeleteSweep,
                 title = "Clear Local Cache",
