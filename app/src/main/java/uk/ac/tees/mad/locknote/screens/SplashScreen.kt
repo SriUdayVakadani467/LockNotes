@@ -28,7 +28,6 @@ import uk.ac.tees.mad.locknote.ui.theme.AppBackground
 
 @Composable
 fun SplashScreen(navController: NavController, viewmodel: MainViewmodel = hiltViewModel()) {
-    val context = LocalContext.current
 
     val scale = remember { Animatable(0f) }
     var quote by remember { mutableStateOf("Keep your thoughts secure.") }

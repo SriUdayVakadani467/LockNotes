@@ -13,8 +13,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import uk.ac.tees.mad.locknote.model.NoteModel
@@ -22,6 +24,7 @@ import uk.ac.tees.mad.locknote.utils.NetworkUtils
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Locale
+import javax.net.ssl.HttpsURLConnection
 
 @HiltViewModel
 class MainViewmodel @Inject constructor(
@@ -211,20 +214,40 @@ class MainViewmodel @Inject constructor(
         prefs.edit().putString(System.currentTimeMillis().toString(), "$title\n$content").apply()
     }
 
-    fun fetchQuote(context: Context): String {
-        return try {
-            if (NetworkUtils.isOnline(context)) {
-                val response = URL("https://api.quotable.io/random").readText()
-                val json = JSONObject(response)
-                json.getString("content")
-            } else {
-                "Stay strong, stay private."
+
+    suspend fun fetchQuote(context: Context): String {
+        return withContext(Dispatchers.IO) {
+            try {
+                if (!NetworkUtils.isOnline(context)) {
+                    return@withContext "Stay strong, stay private."
+                }
+
+                val url = URL("https://zenquotes.io/api/random")
+                val connection = url.openConnection() as HttpsURLConnection
+                connection.apply {
+                    connectTimeout = 5000
+                    readTimeout = 5000
+                    requestMethod = "GET"
+                }
+
+                val response = connection.inputStream.bufferedReader().use { it.readText() }
+                val jsonArray = JSONArray(response)
+
+                if (jsonArray.length() > 0) {
+                    val quoteObject = jsonArray.getJSONObject(0)
+                    val quote = quoteObject.getString("q")
+                    val author = quoteObject.getString("a")
+                    "$quote — $author"
+                } else {
+                    "Inspiration loading..."
+                }
+
+            } catch (e: Exception) {
+                Log.d("API ERROR", e.message.toString())
+                "Keep your thoughts secure."
             }
-        } catch (e: Exception) {
-            "Keep your thoughts secure."
         }
     }
-
     fun setFingerprintPreference(context: Context, enabled: Boolean) {
         val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         prefs.edit().putBoolean("biometric_enabled", enabled).apply()
