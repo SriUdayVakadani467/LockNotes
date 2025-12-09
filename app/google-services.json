@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "686882531179",
-    "project_id": "locknote-839bc",
-    "storage_bucket": "locknote-839bc.firebasestorage.app"
+    "project_number": "1085415806112",
+    "project_id": "locknotes-ba2cb",
+    "storage_bucket": "locknotes-ba2cb.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:686882531179:android:106d7eb3c2e2f118d0ce2e",
+        "mobilesdk_app_id": "1:1085415806112:android:fc74dd85e34a542b9425c5",
         "android_client_info": {
           "package_name": "uk.ac.tees.mad.locknote"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB7Hw8hPtBlLyDM5TctyBaFSCZW7qNTETs"
+          "current_key": "AIzaSyAR8-uEkHNU-SXRzCbbNG8o00HBTYpyIeA"
         }
       ],
       "services": {

@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -98,6 +99,7 @@ fun AddEditNoteScreen(
             BasicTextField(
                 value = title,
                 onValueChange = { title = it },
+                cursorBrush = SolidColor(Color.LightGray),
                 textStyle = TextStyle(color = TextWhite, fontSize = 22.sp, fontWeight = FontWeight.Bold),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -115,6 +117,7 @@ fun AddEditNoteScreen(
 
             BasicTextField(
                 value = content,
+                cursorBrush = SolidColor(Color.LightGray),
                 onValueChange = { content = it },
                 textStyle = TextStyle(color = TextWhite, fontSize = 16.sp, lineHeight = 22.sp),
                 modifier = Modifier
@@ -126,7 +129,7 @@ fun AddEditNoteScreen(
                         Text("Start writing your note...", color = TextGray, fontSize = 16.sp)
                     }
                     innerTextField()
-                }
+                },
             )
         }
 
